@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 
 import 'bluetooth_devices_page.dart';
 import 'bluetooth_provider.dart';
+
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 void main() {
@@ -18,6 +19,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BluetoothProvider()),
+        ChangeNotifierProvider(create: (_) => ObjectDetectionSettings()),
       ],
       child: const MyApp(),
     ),
@@ -80,7 +82,8 @@ class ObjectDetectionPage extends StatefulWidget {
   ObjectDetectionPageState createState() => ObjectDetectionPageState();
 }
 
-class ObjectDetectionPageState extends State<ObjectDetectionPage> with TickerProviderStateMixin, RouteAware {
+class ObjectDetectionPageState extends State<ObjectDetectionPage>
+    with TickerProviderStateMixin, RouteAware {
   flutter_bluetooth_serial.BluetoothConnection? _connection;
   List<Color> bubbleColors = [
     Colors.blue,
@@ -105,11 +108,12 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage> with TickerPro
   }
 
   void _initialize() {
-    _connection = Provider.of<BluetoothProvider>(context, listen: false).connection;
+    _connection =
+        Provider.of<BluetoothProvider>(context, listen: false).connection;
     _startBubbleAnimation();
     _generateRandomBubbles();
     _controller = AnimationController(
-      vsync: this,  // Verwendet jetzt TickerProviderStateMixin
+      vsync: this, // Verwendet jetzt TickerProviderStateMixin
       duration: const Duration(seconds: 1),
     )..repeat(reverse: true);
   }
@@ -141,9 +145,9 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage> with TickerPro
   }
 
   void _refreshConnection() {
-    _connection = Provider.of<BluetoothProvider>(context, listen: false).connection;
+    _connection =
+        Provider.of<BluetoothProvider>(context, listen: false).connection;
   }
-
 
   Future<void> detectObjects() async {
     setState(() {
@@ -152,12 +156,14 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage> with TickerPro
 
     if (_connection != null) {
       try {
-        _connection!.output.add(utf8.encode('take_picture\n'));
+        // Hier you kann send message with number of objects
+        int numberOfObjects = Provider.of<ObjectDetectionSettings>(context, listen: false).numberOfObjects;
+        String command = 'take_picture,$numberOfObjects';
+        _connection!.output.add(utf8.encode('$command\n'));
         await _connection!.output.allSent;
 
         List<int> bytes =
             (await _connection!.input?.toList() ?? []) as List<int>;
-
         String result = utf8.decode(bytes);
         if (kDebugMode) {
           print('Received result from Raspberry Pi: $result');
@@ -259,17 +265,16 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage> with TickerPro
         children: [
           ..._bubbles.map((bubble) {
             return Positioned(
-              left: bubble.x,
-              top: bubble.y,
-              child: Container(
-                width: bubble.size,
-                height: bubble.size,
-                decoration: BoxDecoration(
-                  color: bubble.color,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            );
+                left: bubble.x,
+                top: bubble.y,
+                child: Container(
+                  width: bubble.size,
+                  height: bubble.size,
+                  decoration: BoxDecoration(
+                    color: bubble.color,
+                    shape: BoxShape.circle,
+                  ),
+                ));
           }),
           Center(
             child: _processing
@@ -301,6 +306,17 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage> with TickerPro
                             ),
                           );
                         },
+                      ),
+                      const SizedBox(height: 20.0),
+                      Text(
+                        _result.isEmpty
+                            ? 'Waiting for results...'
+                            : 'Result: $_result',
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -401,9 +417,7 @@ class NumberOfObjectsSettingsPage extends StatefulWidget {
       NumberOfObjectsSettingsPageState();
 }
 
-class NumberOfObjectsSettingsPageState
-    extends State<NumberOfObjectsSettingsPage> {
-  double _numberOfObjects = 3;
+class NumberOfObjectsSettingsPageState extends State<NumberOfObjectsSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
@@ -416,20 +430,18 @@ class NumberOfObjectsSettingsPageState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Slider(
-              value: _numberOfObjects,
+              value: Provider.of<ObjectDetectionSettings>(context, listen: false).numberOfObjects.toDouble(),
               min: 1,
               max: 5,
               divisions: 4,
               onChanged: (newValue) {
-                setState(() {
-                  _numberOfObjects = newValue;
-                });
+                Provider.of<ObjectDetectionSettings>(context, listen: false).numberOfObjects = newValue.toInt();
               },
-              label: _numberOfObjects.toStringAsFixed(0),
+              label: Provider.of<ObjectDetectionSettings>(context, listen: false).numberOfObjects.toString(),
             ),
             const SizedBox(height: 20),
             Text(
-              'Number of Objects: ${_numberOfObjects.toInt()}',
+              'Number of Objects: ${Provider.of<ObjectDetectionSettings>(context).numberOfObjects}',
               style: const TextStyle(fontSize: 20),
             ),
           ],
@@ -439,3 +451,14 @@ class NumberOfObjectsSettingsPageState
   }
 }
 
+
+class ObjectDetectionSettings with ChangeNotifier {
+  int _numberOfObjects = 3; // Default-Wert
+
+  int get numberOfObjects => _numberOfObjects;
+
+  set numberOfObjects(int newValue) {
+    _numberOfObjects = newValue;
+    notifyListeners();
+  }
+}
