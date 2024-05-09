@@ -2,44 +2,59 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:first_app/home_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart' as flutter_blue;
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart'
     as flutter_bluetooth_serial;
-import 'package:collection/collection.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:provider/provider.dart';
+
+import 'bluetooth_devices_page.dart';
+import 'bluetooth_provider.dart';
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => BluetoothProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [routeObserver],
       title: 'Object Detection',
       theme: ThemeData(
         primaryColor: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 4), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => ObjectDetectionPage()),
+        MaterialPageRoute(builder: (context) => const ObjectDetectionPage()),
       );
     });
   }
@@ -59,12 +74,13 @@ class _SplashScreenState extends State<SplashScreen> {
 }
 
 class ObjectDetectionPage extends StatefulWidget {
+  const ObjectDetectionPage({super.key});
+
   @override
-  _ObjectDetectionPageState createState() => _ObjectDetectionPageState();
+  ObjectDetectionPageState createState() => ObjectDetectionPageState();
 }
 
-class _ObjectDetectionPageState extends State<ObjectDetectionPage>
-    with SingleTickerProviderStateMixin {
+class ObjectDetectionPageState extends State<ObjectDetectionPage> with TickerProviderStateMixin, RouteAware {
   flutter_bluetooth_serial.BluetoothConnection? _connection;
   List<Color> bubbleColors = [
     Colors.blue,
@@ -76,7 +92,6 @@ class _ObjectDetectionPageState extends State<ObjectDetectionPage>
   List<double> bubbleSizes = [20.0, 25.0, 30.0, 35.0, 40.0];
   List<Bubble> _bubbles = [];
   late AnimationController _controller;
-  flutter_blue.FlutterBlue flutterBlue = flutter_blue.FlutterBlue.instance;
   StreamSubscription? scanSubscription;
   bool _processing = false;
   String _result = '';
@@ -85,55 +100,52 @@ class _ObjectDetectionPageState extends State<ObjectDetectionPage>
   @override
   void initState() {
     super.initState();
-    _connectToBluetoothServer();
+    // WidgetsBinding.instance.addObserver(this);
+    _initialize();
+  }
+
+  void _initialize() {
+    _connection = Provider.of<BluetoothProvider>(context, listen: false).connection;
     _startBubbleAnimation();
     _generateRandomBubbles();
     _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 1),
+      vsync: this,  // Verwendet jetzt TickerProviderStateMixin
+      duration: const Duration(seconds: 1),
     )..repeat(reverse: true);
-    flutterBlue.startScan(timeout: Duration(seconds: 4));
-    scanSubscription = flutterBlue.scanResults.listen((results) {
-      for (flutter_blue.ScanResult r in results) {
-        print('${r.device.name} found! rssi: ${r.rssi}');
-      }
-    });
   }
 
   @override
   void dispose() {
+    // WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
-    if (_connection != null) {
-      _connection!.dispose();
-    }
-    flutterBlue.stopScan();
     scanSubscription?.cancel();
     super.dispose();
   }
 
-  Future<void> _connectToBluetoothServer() async {
-    List<flutter_bluetooth_serial.BluetoothDevice> devices =
-        await flutter_bluetooth_serial.FlutterBluetoothSerial.instance
-            .getBondedDevices();
-    String raspberryPiAddress = 'D8:3A:DD:5F:AD:2F';
-
-    flutter_bluetooth_serial.BluetoothDevice? raspberryPiDevice =
-        devices.firstWhereOrNull(
-      (device) => device.address == raspberryPiAddress,
-    );
-
-    if (raspberryPiDevice != null) {
-      try {
-        _connection =
-            await flutter_bluetooth_serial.BluetoothConnection.toAddress(
-                raspberryPiAddress);
-      } catch (error) {
-        print('Error connecting to Bluetooth server: $error');
-      }
-    }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
   }
 
-  Future<void> _detectObjects() async {
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    _refreshConnection();
+  }
+
+  @override
+  void didPush() {
+    super.didPush();
+    _initialize();
+  }
+
+  void _refreshConnection() {
+    _connection = Provider.of<BluetoothProvider>(context, listen: false).connection;
+  }
+
+
+  Future<void> detectObjects() async {
     setState(() {
       _processing = true;
     });
@@ -147,20 +159,26 @@ class _ObjectDetectionPageState extends State<ObjectDetectionPage>
             (await _connection!.input?.toList() ?? []) as List<int>;
 
         String result = utf8.decode(bytes);
-        print('Received result from Raspberry Pi: $result');
+        if (kDebugMode) {
+          print('Received result from Raspberry Pi: $result');
+        }
         setState(() {
           _result = result;
           _processing = false;
         });
         await flutterTts.speak('Processed has started. $_result');
       } catch (error) {
-        print('Error communicating with Bluetooth server: $error');
+        if (kDebugMode) {
+          print('Error communicating with Bluetooth server: $error');
+        }
         setState(() {
           _processing = false;
         });
       }
     } else {
-      print('Not connected to Bluetooth server.');
+      if (kDebugMode) {
+        print('Not connected to Bluetooth server.');
+      }
       setState(() {
         _processing = false;
       });
@@ -168,7 +186,7 @@ class _ObjectDetectionPageState extends State<ObjectDetectionPage>
   }
 
   void _startBubbleAnimation() {
-    Timer.periodic(Duration(milliseconds: 50), (timer) {
+    Timer.periodic(const Duration(milliseconds: 50), (timer) {
       setState(() {
         for (var bubble in _bubbles) {
           bubble.move();
@@ -189,18 +207,47 @@ class _ObjectDetectionPageState extends State<ObjectDetectionPage>
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'Vision',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 30,
-            fontFamily: 'Lugrasimo',
-          ),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'Vision',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 30,
+                fontFamily: 'Lugrasimo',
+              ),
+            ),
+            Consumer<BluetoothProvider>(
+              builder: (context, bluetooth, child) => Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      'Connected with: ${bluetooth.connectedDeviceName ?? "No device connected"}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  if (bluetooth.connectedDeviceName != null)
+                    IconButton(
+                      icon: const Icon(Icons.link_off, color: Colors.red),
+                      onPressed: () {
+                        bluetooth.disconnect();
+                      },
+                      tooltip: 'Disconnect',
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.menu, color: Colors.blue),
+              icon: const Icon(Icons.menu, color: Colors.blue),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
@@ -223,33 +270,33 @@ class _ObjectDetectionPageState extends State<ObjectDetectionPage>
                 ),
               ),
             );
-          }).toList(),
+          }),
           Center(
             child: _processing
-                ? CircularProgressIndicator()
+                ? const CircularProgressIndicator()
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(
+                      const Text(
                         'Press the button to detect objects',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 20.0),
                       ),
-                      SizedBox(height: 20.0),
+                      const SizedBox(height: 20.0),
                       AnimatedBuilder(
                         animation: _controller,
                         builder: (context, child) {
                           return Container(
                             width: 110 + _controller.value * 20,
                             height: 110 + _controller.value * 20,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.blue,
                             ),
                             child: IconButton(
-                              icon: Icon(Icons.camera_alt),
+                              icon: const Icon(Icons.camera_alt),
                               iconSize: 30,
-                              onPressed: _detectObjects,
+                              onPressed: detectObjects,
                               color: Colors.white,
                             ),
                           );
@@ -264,7 +311,7 @@ class _ObjectDetectionPageState extends State<ObjectDetectionPage>
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.deepPurple,
               ),
@@ -277,28 +324,23 @@ class _ObjectDetectionPageState extends State<ObjectDetectionPage>
               ),
             ),
             ListTile(
-              title: Text('Number of Objects to be Detected'),
+              title: const Text('Number of Objects to be Detected'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NumberOfObjectsSettingsPage(),
+                    builder: (context) => const NumberOfObjectsSettingsPage(),
                   ),
                 );
               },
             ),
             ListTile(
-              title: Text('Bluetooth Settings'),
+              title: const Text('Bluetooth Settings'),
               onTap: () {
-                Navigator.pop(context);
-
-                // var bluetoothManager = BluetoothManagerPage();
-                Navigator.push(
-                  context,
+                Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => BluetoothManagerPage(),
-                  ),
+                      builder: (context) => const BluetoothDevicesPage()),
                 );
               },
             ),
@@ -352,12 +394,14 @@ class Bubble {
 }
 
 class NumberOfObjectsSettingsPage extends StatefulWidget {
+  const NumberOfObjectsSettingsPage({super.key});
+
   @override
-  _NumberOfObjectsSettingsPageState createState() =>
-      _NumberOfObjectsSettingsPageState();
+  NumberOfObjectsSettingsPageState createState() =>
+      NumberOfObjectsSettingsPageState();
 }
 
-class _NumberOfObjectsSettingsPageState
+class NumberOfObjectsSettingsPageState
     extends State<NumberOfObjectsSettingsPage> {
   double _numberOfObjects = 3;
 
@@ -365,7 +409,7 @@ class _NumberOfObjectsSettingsPageState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Number of Objects'),
+        title: const Text('Number of Objects'),
       ),
       body: Center(
         child: Column(
@@ -383,10 +427,10 @@ class _NumberOfObjectsSettingsPageState
               },
               label: _numberOfObjects.toStringAsFixed(0),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Number of Objects: ${_numberOfObjects.toInt()}',
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
           ],
         ),
@@ -395,37 +439,3 @@ class _NumberOfObjectsSettingsPageState
   }
 }
 
-class BluetoothManagerPage extends StatefulWidget {
-    @override
-  _BluetoothManagerPageState createState() => _BluetoothManagerPageState();
-}
-  
-   
-
-class _BluetoothManagerPageState extends State<BluetoothManagerPage> {
-  final BluetoothManager bluetoothManager = BluetoothManager();
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      bluetoothManager.runBluetoothApp();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Bluetooth Settings'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: Container(), // or any other widget if needed
-    );
-  }
-}

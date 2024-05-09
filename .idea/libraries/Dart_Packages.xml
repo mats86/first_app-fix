@@ -37,20 +37,6 @@
             </list>
           </value>
         </entry>
-        <entry key="convert">
-          <value>
-            <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/convert-3.1.1/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="cupertino_icons">
-          <value>
-            <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/cupertino_icons-1.0.8/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="fake_async">
           <value>
             <list>
@@ -58,24 +44,10 @@
             </list>
           </value>
         </entry>
-        <entry key="fixnum">
-          <value>
-            <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/fixnum-1.1.0/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="flutter">
           <value>
             <list>
-              <option value="D:/dev/flutter/flutter/packages/flutter/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="flutter_blue">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../flutter_blue-master/lib" />
+              <option value="$PROJECT_DIR$/../../../../dev/flutter/packages/flutter/lib" />
             </list>
           </value>
         </entry>
@@ -93,38 +65,24 @@
             </list>
           </value>
         </entry>
-        <entry key="flutter_scan_bluetooth">
-          <value>
-            <list>
-              <option value="D:/OneDrive/Desktop/Graduation project/flutter_scan_bluetooth-master/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="flutter_test">
           <value>
             <list>
-              <option value="D:/dev/flutter/flutter/packages/flutter_test/lib" />
+              <option value="$PROJECT_DIR$/../../../../dev/flutter/packages/flutter_test/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_tts">
+          <value>
+            <list>
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_tts-4.0.2/lib" />
             </list>
           </value>
         </entry>
         <entry key="flutter_web_plugins">
           <value>
             <list>
-              <option value="D:/dev/flutter/flutter/packages/flutter_web_plugins/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="http">
-          <value>
-            <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.2.1/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="http_parser">
-          <value>
-            <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/http_parser-4.0.2/lib" />
+              <option value="$PROJECT_DIR$/../../../../dev/flutter/packages/flutter_web_plugins/lib" />
             </list>
           </value>
         </entry>
@@ -174,6 +132,13 @@
           <value>
             <list>
               <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.11.0/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="nested">
+          <value>
+            <list>
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0/lib" />
             </list>
           </value>
         </entry>
@@ -233,24 +198,17 @@
             </list>
           </value>
         </entry>
-        <entry key="protobuf">
+        <entry key="provider">
           <value>
             <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/protobuf-2.1.0/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="rxdart">
-          <value>
-            <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/rxdart-0.26.0/lib" />
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2/lib" />
             </list>
           </value>
         </entry>
         <entry key="sky_engine">
           <value>
             <list>
-              <option value="D:/dev/flutter/flutter/bin/cache/pkg/sky_engine/lib" />
+              <option value="$PROJECT_DIR$/../../../../dev/flutter/bin/cache/pkg/sky_engine/lib" />
             </list>
           </value>
         </entry>
@@ -296,13 +254,6 @@
             </list>
           </value>
         </entry>
-        <entry key="typed_data">
-          <value>
-            <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/typed_data-1.3.2/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="vector_math">
           <value>
             <list>
@@ -317,13 +268,6 @@
             </list>
           </value>
         </entry>
-        <entry key="web">
-          <value>
-            <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/web-0.5.1/lib" />
-            </list>
-          </value>
-        </entry>
       </option>
     </properties>
     <CLASSES>
@@ -332,14 +276,10 @@
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/characters-1.3.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/clock-1.1.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.18.0/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/convert-3.1.1/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/cupertino_icons-1.0.8/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/fake_async-1.3.1/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/fixnum-1.1.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_bluetooth_serial-0.4.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-2.0.3/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.2.1/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/http_parser-4.0.2/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_tts-4.0.2/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker-10.0.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_flutter_testing-2.0.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_testing-2.0.1/lib" />
@@ -347,6 +287,7 @@
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/matcher-0.12.16+1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/material_color_utilities-0.8.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.11.0/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler-11.3.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler_android-12.0.6/lib" />
@@ -355,24 +296,19 @@
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler_platform_interface-4.2.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/permission_handler_windows-0.2.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.8/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/protobuf-2.1.0/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/rxdart-0.26.0/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/source_span-1.10.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stack_trace-1.11.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stream_channel-2.1.2/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/string_scanner-1.2.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/term_glyph-1.2.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/test_api-0.6.1/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/typed_data-1.3.2/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.1.4/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-13.0.0/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/web-0.5.1/lib" />
-      <root url="file://$PROJECT_DIR$/../flutter_blue-master/lib" />
-      <root url="file://D:/OneDrive/Desktop/Graduation project/flutter_scan_bluetooth-master/lib" />
-      <root url="file://D:/dev/flutter/flutter/bin/cache/pkg/sky_engine/lib" />
-      <root url="file://D:/dev/flutter/flutter/packages/flutter/lib" />
-      <root url="file://D:/dev/flutter/flutter/packages/flutter_test/lib" />
-      <root url="file://D:/dev/flutter/flutter/packages/flutter_web_plugins/lib" />
+      <root url="file://$PROJECT_DIR$/../../../../dev/flutter/bin/cache/pkg/sky_engine/lib" />
+      <root url="file://$PROJECT_DIR$/../../../../dev/flutter/packages/flutter/lib" />
+      <root url="file://$PROJECT_DIR$/../../../../dev/flutter/packages/flutter_test/lib" />
+      <root url="file://$PROJECT_DIR$/../../../../dev/flutter/packages/flutter_web_plugins/lib" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
