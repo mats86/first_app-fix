@@ -156,23 +156,31 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage>
 
     if (_connection != null) {
       try {
-        // Hier you kann send message with number of objects
-        int numberOfObjects = Provider.of<ObjectDetectionSettings>(context, listen: false).numberOfObjects;
+        int numberOfObjects =
+            Provider.of<ObjectDetectionSettings>(context, listen: false)
+                .numberOfObjects;
         String command = 'take_picture,$numberOfObjects';
         _connection!.output.add(utf8.encode('$command\n'));
         await _connection!.output.allSent;
 
-        List<int> bytes =
-            (await _connection!.input?.toList() ?? []) as List<int>;
-        String result = utf8.decode(bytes);
-        if (kDebugMode) {
-          print('Received result from Raspberry Pi: $result');
-        }
-        setState(() {
-          _result = result;
-          _processing = false;
+        _connection?.input?.asBroadcastStream().listen((Uint8List data) {
+          String result = utf8.decode(data);
+          if (kDebugMode) {
+            print('Received result from Raspberry Pi: ${ascii.decode(data)}');
+          }
+          setState(() {
+            _result = result;
+            _processing = false;
+          });
+          flutterTts.speak('Processed has started. $_result');
+
+        }).onDone(() {
+          if (kDebugMode) {
+            print('Disconnected by remote request');
+          }
+          // bluetooth.disconnect(); // Handle disconnection when completed
         });
-        await flutterTts.speak('Processed has started. $_result');
+
       } catch (error) {
         if (kDebugMode) {
           print('Error communicating with Bluetooth server: $error');
@@ -237,7 +245,7 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage>
                       ),
                     ),
                   ),
-                  if (bluetooth.connectedDeviceName != null)
+                  if (bluetooth.connectedDeviceName != null) ...[
                     IconButton(
                       icon: const Icon(Icons.link_off, color: Colors.red),
                       onPressed: () {
@@ -245,6 +253,19 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage>
                       },
                       tooltip: 'Disconnect',
                     ),
+                  ] else ...[
+                    IconButton(
+                      icon: const Icon(Icons.link_outlined, color: Colors.blue),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const BluetoothDevicesPage(),
+                          ),
+                        );
+                      },
+                      tooltip: 'Connection',
+                    ),
+                  ]
                 ],
               ),
             ),
@@ -417,8 +438,8 @@ class NumberOfObjectsSettingsPage extends StatefulWidget {
       NumberOfObjectsSettingsPageState();
 }
 
-class NumberOfObjectsSettingsPageState extends State<NumberOfObjectsSettingsPage> {
-
+class NumberOfObjectsSettingsPageState
+    extends State<NumberOfObjectsSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -430,14 +451,21 @@ class NumberOfObjectsSettingsPageState extends State<NumberOfObjectsSettingsPage
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Slider(
-              value: Provider.of<ObjectDetectionSettings>(context, listen: false).numberOfObjects.toDouble(),
+              value:
+                  Provider.of<ObjectDetectionSettings>(context, listen: false)
+                      .numberOfObjects
+                      .toDouble(),
               min: 1,
               max: 5,
               divisions: 4,
               onChanged: (newValue) {
-                Provider.of<ObjectDetectionSettings>(context, listen: false).numberOfObjects = newValue.toInt();
+                Provider.of<ObjectDetectionSettings>(context, listen: false)
+                    .numberOfObjects = newValue.toInt();
               },
-              label: Provider.of<ObjectDetectionSettings>(context, listen: false).numberOfObjects.toString(),
+              label:
+                  Provider.of<ObjectDetectionSettings>(context, listen: false)
+                      .numberOfObjects
+                      .toString(),
             ),
             const SizedBox(height: 20),
             Text(
@@ -450,7 +478,6 @@ class NumberOfObjectsSettingsPageState extends State<NumberOfObjectsSettingsPage
     );
   }
 }
-
 
 class ObjectDetectionSettings with ChangeNotifier {
   int _numberOfObjects = 3; // Default-Wert

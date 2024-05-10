@@ -32,21 +32,7 @@ class BluetoothProvider with ChangeNotifier {
         print('Attempting to connect to ${device.address}');
       }
       _connection = await BluetoothConnection.toAddress(device.address);
-      _connection?.input?.listen((Uint8List data) {
-        if (kDebugMode) {
-          print('Data incoming: ${ascii.decode(data)}');
-        }
-        _connection?.output.add(data); // Echo the data back
 
-        if (ascii.decode(data).contains('!')) {
-          disconnect(); // Handle disconnection
-        }
-      }).onDone(() {
-        if (kDebugMode) {
-          print('Disconnected by remote request');
-        }
-        disconnect(); // Handle disconnection when completed
-      });
       if (kDebugMode) {
         print('Connection successful to ${device.name}');
       }
