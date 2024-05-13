@@ -85,6 +85,7 @@ class ObjectDetectionPage extends StatefulWidget {
 class ObjectDetectionPageState extends State<ObjectDetectionPage>
     with TickerProviderStateMixin, RouteAware {
   flutter_bluetooth_serial.BluetoothConnection? _connection;
+  Stream<Uint8List>? _bluetoothStream;
   List<Color> bubbleColors = [
     Colors.blue,
     Colors.green,
@@ -110,6 +111,7 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage>
   void _initialize() {
     _connection =
         Provider.of<BluetoothProvider>(context, listen: false).connection;
+    _bluetoothStream = _connection?.input?.asBroadcastStream();
     _startBubbleAnimation();
     _generateRandomBubbles();
     _controller = AnimationController(
@@ -147,13 +149,14 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage>
   void _refreshConnection() {
     _connection =
         Provider.of<BluetoothProvider>(context, listen: false).connection;
+    _bluetoothStream = _connection?.input?.asBroadcastStream();
   }
 
   Future<void> detectObjects() async {
     setState(() {
       _processing = true;
+      _result = '';
     });
-
     if (_connection != null) {
       try {
         int numberOfObjects =
@@ -163,7 +166,7 @@ class ObjectDetectionPageState extends State<ObjectDetectionPage>
         _connection!.output.add(utf8.encode('$command\n'));
         await _connection!.output.allSent;
 
-        _connection?.input?.asBroadcastStream().listen((Uint8List data) {
+        _bluetoothStream?.listen((Uint8List data) {
           String result = utf8.decode(data);
           if (kDebugMode) {
             print('Received result from Raspberry Pi: ${ascii.decode(data)}');

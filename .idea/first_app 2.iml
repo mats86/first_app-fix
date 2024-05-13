@@ -12,6 +12,12 @@
       <excludeFolder url="file://$MODULE_DIR$/first_app/windows/flutter/ephemeral/.plugin_symlinks/permission_handler_windows/example/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/first_app/windows/flutter/ephemeral/.plugin_symlinks/permission_handler_windows/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/first_app/windows/flutter/ephemeral/.plugin_symlinks/permission_handler_windows/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/first_app/windows/flutter/ephemeral/.plugin_symlinks/flutter_tts/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/first_app/windows/flutter/ephemeral/.plugin_symlinks/flutter_tts/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/first_app/windows/flutter/ephemeral/.plugin_symlinks/flutter_tts/build" />
+      <excludeFolder url="file://$MODULE_DIR$/first_app/windows/flutter/ephemeral/.plugin_symlinks/flutter_tts/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/first_app/windows/flutter/ephemeral/.plugin_symlinks/flutter_tts/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/first_app/windows/flutter/ephemeral/.plugin_symlinks/flutter_tts/example/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
